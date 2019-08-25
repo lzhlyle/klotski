@@ -1,5 +1,7 @@
 package com.lzhlyle.klotski.board;
 
+import com.lzhlyle.klotski.vo.Position;
+
 public class Cell {
     private Position position;
     private boolean isEmpty;

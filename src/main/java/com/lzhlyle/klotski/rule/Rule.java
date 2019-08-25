@@ -1,4 +1,4 @@
-package com.lzhlyle.klotski.regulation;
+package com.lzhlyle.klotski.rule;
 
 public abstract class Rule {
 

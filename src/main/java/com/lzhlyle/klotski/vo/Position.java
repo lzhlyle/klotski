@@ -1,4 +1,4 @@
-package com.lzhlyle.klotski.board;
+package com.lzhlyle.klotski.vo;
 
 import java.util.Objects;
 

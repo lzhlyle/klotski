@@ -1,31 +1,26 @@
 package com.lzhlyle.klotski.game;
 
-import com.lzhlyle.klotski.block.CubeBlock;
-import com.lzhlyle.klotski.block.HorizontalBlock;
-import com.lzhlyle.klotski.block.SquareBlock;
-import com.lzhlyle.klotski.block.VerticalBlock;
+import com.lzhlyle.klotski.block.*;
 import com.lzhlyle.klotski.board.Board;
+import com.lzhlyle.klotski.opening.Opening;
 import com.lzhlyle.klotski.pedometer.Pedometer;
-import com.lzhlyle.klotski.quide.Quide;
-import com.lzhlyle.klotski.regulation.Regulation;
+import com.lzhlyle.klotski.rule.MoveRule;
+import com.lzhlyle.klotski.rule.WinRule;
+import com.lzhlyle.klotski.vo.Duration;
 
 import java.util.List;
 
 public class Game {
-    private Board board;
+    private Opening opening;
+    private MoveRule moveRule;
+    private WinRule winRule;
+    private Duration duration;
+    private GameStatus status;
 
-    private List<CubeBlock> cubeBlockList;
-    private List<HorizontalBlock> horizontalBlockList;
-    private List<VerticalBlock> verticalBlockList;
-    private SquareBlock squareBlock;
+    private Board board;
+    private List<Block> cubeBlockList;
 
     private Pedometer pedometer;
-
-    private Regulation moveRegulation;
-
-    private Quide quide;
-
-    private GameStatus status;
 
     public Game() {
         this.status = GameStatus.READY;

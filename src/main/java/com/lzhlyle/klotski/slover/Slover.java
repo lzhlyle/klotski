@@ -1,8 +1,10 @@
 package com.lzhlyle.klotski.slover;
 
 import com.lzhlyle.klotski.quide.Quide;
+import com.lzhlyle.klotski.vo.Duration;
 
 public class Slover {
+    private Duration duration;
     private int minSteps;
     private Quide quide;
 
@@ -10,13 +12,5 @@ public class Slover {
 
     public void explore() {
 
-    }
-
-    public int getMinSteps() {
-        return minSteps;
-    }
-
-    public Quide getQuide() {
-        return quide;
     }
 }

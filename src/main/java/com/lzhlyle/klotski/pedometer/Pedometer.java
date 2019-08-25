@@ -1,13 +1,9 @@
 package com.lzhlyle.klotski.pedometer;
 
-import com.lzhlyle.klotski.regulation.Regulation;
+import com.lzhlyle.klotski.rule.StepRule;
 
 public class Pedometer {
-    private Regulation recordRegulation;
-
-    public Pedometer(Regulation recordRegulation) {
-        this.recordRegulation = recordRegulation;
-    }
+    private StepRule stepRule;
 
     public boolean record() {
         return false;

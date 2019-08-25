@@ -1,4 +1,4 @@
-package com.lzhlyle.klotski.quide;
+package com.lzhlyle.klotski.vo;
 
 public class Snapshot {
     private String compressResult;
