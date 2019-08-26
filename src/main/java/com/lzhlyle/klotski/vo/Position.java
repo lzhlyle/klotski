@@ -3,20 +3,20 @@ package com.lzhlyle.klotski.vo;
 import java.util.Objects;
 
 public class Position {
-    private int abscissa;
-    private int ordinate;
+    private int x;
+    private int y;
 
-    public Position(int abscissa, int ordinate) {
-        this.abscissa = abscissa;
-        this.ordinate = ordinate;
+    public Position(int x, int y) {
+        this.x = x;
+        this.y = y;
     }
 
-    public int getAbscissa() {
-        return abscissa;
+    public int getX() {
+        return x;
     }
 
-    public int getOrdinate() {
-        return ordinate;
+    public int getY() {
+        return y;
     }
 
     @Override
@@ -24,20 +24,20 @@ public class Position {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Position position = (Position) o;
-        return abscissa == position.abscissa &&
-                ordinate == position.ordinate;
+        return x == position.x &&
+                y == position.y;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(abscissa, ordinate);
+        return Objects.hash(x, y);
     }
 
     @Override
     public String toString() {
         return "Position{" +
-                "abscissa=" + abscissa +
-                ", ordinate=" + ordinate +
+                "x=" + x +
+                ", y=" + y +
                 '}';
     }
 }
