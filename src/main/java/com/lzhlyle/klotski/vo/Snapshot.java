@@ -1,9 +1,11 @@
 package com.lzhlyle.klotski.vo;
 
+import com.lzhlyle.klotski.block.*;
 import com.lzhlyle.klotski.board.BlockPlace;
 import com.lzhlyle.klotski.board.Board;
 import com.lzhlyle.klotski.board.Cell;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -16,15 +18,45 @@ public class Snapshot {
 
     public Snapshot(Board board, List<BlockPlace> blockPlaceList) {
         // compressing
-        String boardCompress = this.compressBoard(board);
-        String blockPlaceListCompress = this.compressBlockPlaceList(blockPlaceList);
-
-        this.compressResult = boardCompress + "|" + blockPlaceListCompress;
+        this.compressResult = this.compressBoard(board) + "|" + this.compressBlockPlaceList(blockPlaceList);
     }
 
     private String compressBlockPlaceList(List<BlockPlace> blockPlaceList) {
-        // TODO lzh compress block place list
-        return "";
+        StringBuilder builder = new StringBuilder();
+        blockPlaceList.stream()
+                // sort by y asc, x asc
+                .sorted(
+                        Comparator.comparing(BlockPlace::getSouthwestCell,
+                                Comparator.comparing(Cell::getPosition,
+                                        Comparator.comparingInt(Position::getX))))
+                .sorted(
+                        Comparator.comparing(BlockPlace::getSouthwestCell,
+                                Comparator.comparing(Cell::getPosition,
+                                        Comparator.comparingInt(Position::getY))))
+                .forEach(blockPlace -> builder.append(this.getBlockStr(blockPlace.getBlock()))
+                        .append(this.getPositionStr(blockPlace.getSouthwestCell().getPosition())));
+        return builder.toString();
+    }
+
+    private String getPositionStr(Position position) {
+        return (position.getX() == 0 ? "" : position.getX())
+                + "," +
+                (position.getY() == 0 ? "" : position.getY());
+    }
+
+    private String getBlockStr(Block block) {
+        if (block instanceof SquareBlock) {
+            return "S";
+        } else if (block instanceof HorizontalBlock) {
+            return "H";
+        } else if (block instanceof VerticalBlock) {
+            return "V";
+        } else if (block instanceof CubeBlock) {
+            return "C";
+        } else {
+            // Un-know
+            return "U";
+        }
     }
 
     private String compressBoard(Board board) {
@@ -33,8 +65,8 @@ public class Snapshot {
         // support square only
         List<Cell> cellsInBoard = board.getCellList();
         for (Cell cell : cellsInBoard) {
-            width = Math.max(width, cell.getPosition().getX());
-            height = Math.max(height, cell.getPosition().getY());
+            width = Math.max(width, cell.getPosition().getX() + 1);
+            height = Math.max(height, cell.getPosition().getY() + 1);
         }
         return width + "," + height;
     }

@@ -3,16 +3,19 @@ package com.lzhlyle.klotski.board;
 import com.lzhlyle.klotski.block.Block;
 
 public class BlockPlace {
-    private Cell cell;
+    /**
+     * 最左下角的格子(距离原点最近)，西南方格子
+     */
+    private Cell southwestCell;
     private Block block;
 
-    public BlockPlace(Cell cell, Block block) {
-        this.cell = cell;
+    public BlockPlace(Cell southwestCell, Block block) {
+        this.southwestCell = southwestCell;
         this.block = block;
     }
 
-    public Cell getCell() {
-        return cell;
+    public Cell getSouthwestCell() {
+        return southwestCell;
     }
 
     public Block getBlock() {

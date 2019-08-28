@@ -75,13 +75,14 @@ public class Duration {
             Date now = now();
             this.endDatetime = now;
             this.lastToDatetime = now;
+
+            // add up
+            this.durationMillis = this.durationMillis + (this.lastToDatetime.getTime() - this.lastFromDatetime.getTime());
         } else {
             // suspend
             this.endDatetime = this.lastToDatetime;
+            // should not add up again
         }
-
-        // add up
-        this.durationMillis = this.durationMillis + (this.lastToDatetime.getTime() - this.lastFromDatetime.getTime());
 
         // clear from to
         this.lastFromDatetime = null;
