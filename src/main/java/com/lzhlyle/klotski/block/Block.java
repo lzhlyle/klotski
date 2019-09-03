@@ -3,7 +3,7 @@ package com.lzhlyle.klotski.block;
 import com.lzhlyle.klotski.move.IMovable;
 import com.lzhlyle.klotski.move.MoveDirection;
 
-public abstract class Block implements IMovable {
+public abstract class Block implements IMovable, Cloneable {
     private int height;
     private int width;
 
@@ -13,6 +13,7 @@ public abstract class Block implements IMovable {
     }
 
     public boolean move(MoveDirection direction) {
+        // TODO lzh block.move()
         return false;
     }
 
@@ -22,5 +23,10 @@ public abstract class Block implements IMovable {
 
     public int getWidth() {
         return width;
+    }
+
+    @Override
+    protected Block clone() throws CloneNotSupportedException {
+        return (Block) super.clone();
     }
 }
