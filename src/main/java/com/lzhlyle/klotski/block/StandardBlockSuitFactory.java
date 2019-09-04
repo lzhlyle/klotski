@@ -10,18 +10,8 @@ public class StandardBlockSuitFactory implements IBlockSuitFactory {
 
         blockSuit.add(new SquareBlock());
         blockSuit.add(new HorizontalBlock());
-
-        VerticalBlock vBlock = new VerticalBlock();
-        blockSuit.add(vBlock);
-        for (int i = 0; i < 3; i++) {
-            blockSuit.add(vBlock.clone());
-        }
-
-        CubeBlock cBlock = new CubeBlock();
-        blockSuit.add(cBlock);
-        for (int i = 0; i < 3; i++) {
-            blockSuit.add(cBlock.clone());
-        }
+        blockSuit.addAll(Block.generate(4, VerticalBlock::new));
+        blockSuit.addAll(Block.generate(4, CubeBlock::new));
 
         return blockSuit;
     }

@@ -2,6 +2,9 @@ package com.lzhlyle.klotski.board;
 
 import com.lzhlyle.klotski.vo.Position;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Cell implements Cloneable {
     private Position position;
     private boolean isEmpty;
@@ -28,8 +31,18 @@ public class Cell implements Cloneable {
         return isEmpty;
     }
 
+    public static List<Cell> generateCells(int count) throws CloneNotSupportedException {
+        Cell prototype = new Cell();
+        List<Cell> cellList = new ArrayList<>();
+        cellList.add(prototype);
+        for (int i = 0; i < count - 1; i++) {
+            cellList.add(prototype.clone());
+        }
+        return cellList;
+    }
+
     @Override
-    public Cell clone() throws CloneNotSupportedException {
+    protected Cell clone() throws CloneNotSupportedException {
         return (Cell) super.clone();
     }
 }

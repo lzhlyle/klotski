@@ -3,6 +3,10 @@ package com.lzhlyle.klotski.block;
 import com.lzhlyle.klotski.move.IMovable;
 import com.lzhlyle.klotski.move.MoveDirection;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
+
 public abstract class Block implements IMovable, Cloneable {
     private int height;
     private int width;
@@ -23,6 +27,17 @@ public abstract class Block implements IMovable, Cloneable {
 
     public int getWidth() {
         return width;
+    }
+
+    public static <B extends Block> List<B> generate(int count, Supplier<B> constr)
+            throws CloneNotSupportedException {
+        B prototype = constr.get();
+        List<B> blockList = new ArrayList<>();
+        blockList.add(prototype);
+        for (int i = 0; i < count - 1; i++) {
+            blockList.add((B) prototype.clone());
+        }
+        return blockList;
     }
 
     @Override
