@@ -1,5 +1,5 @@
 package com.lzhlyle.klotski.move;
 
-public enum MoveDirection {
+public enum MoveDirectionEnum {
     UP, DOWN, LEFT, RIGHT,
 }

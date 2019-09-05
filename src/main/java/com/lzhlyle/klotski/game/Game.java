@@ -19,7 +19,7 @@ public class Game {
     private MoveRule moveRule;
     private WinRule winRule;
     private Duration duration;
-    private GameStatus status;
+    private GameStatusEnum status;
 
     private Board board;
     private List<Block> cubeBlockList;
@@ -34,7 +34,7 @@ public class Game {
         this.moveRule = new MoveRule();
         this.winRule = new WinRule();
         this.duration = null;
-        this.status = GameStatus.READY;
+        this.status = GameStatusEnum.READY;
 
         this.board = boardFactory.createBoard();
         this.cubeBlockList = blockSuitFactory.createBlockSuit();

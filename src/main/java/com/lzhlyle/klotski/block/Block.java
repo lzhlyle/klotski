@@ -1,7 +1,7 @@
 package com.lzhlyle.klotski.block;
 
 import com.lzhlyle.klotski.move.IMovable;
-import com.lzhlyle.klotski.move.MoveDirection;
+import com.lzhlyle.klotski.move.MoveDirectionEnum;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,7 @@ public abstract class Block implements IMovable, Cloneable {
         this.width = width;
     }
 
-    public boolean move(MoveDirection direction) {
+    public boolean move(MoveDirectionEnum direction) {
         // TODO lzh block.move()
         return false;
     }

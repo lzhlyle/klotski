@@ -1,5 +1,5 @@
 package com.lzhlyle.klotski.game;
 
-public enum GameStatus {
+public enum GameStatusEnum {
     READY, PLAYING, SUSPEND, WIN
 }

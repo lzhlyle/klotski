@@ -8,5 +8,5 @@ public interface IMovable {
      * @param direction which direction dose the first step move relative to the current position
      * @return movable or not
      */
-    boolean move(MoveDirection direction);
+    boolean move(MoveDirectionEnum direction);
 }
