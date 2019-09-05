@@ -17,7 +17,6 @@ public abstract class Block implements IMovable, Cloneable {
     }
 
     public boolean move(MoveDirectionEnum direction) {
-        // TODO lzh block.move()
         return false;
     }
 
