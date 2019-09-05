@@ -35,6 +35,7 @@ public class GameTest {
             CubeBlock c = this.game.pickUpOnly(CubeBlock.class);
             Assert.fail("should throw exception");
         } catch (RuntimeException ex) {
+            System.out.println(ex.getMessage());
             Assert.assertTrue(ex.getMessage().contains("can not find"));
         }
     }
@@ -52,6 +53,7 @@ public class GameTest {
             CubeBlock c = this.game.pickUp(CubeBlock.class, new Position(1, 1));
             Assert.fail("should throw exception");
         } catch (RuntimeException ex) {
+            System.out.println(ex.getMessage());
             Assert.assertTrue(ex.getMessage().contains("can not find"));
         }
     }
