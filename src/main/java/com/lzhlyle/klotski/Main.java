@@ -2,6 +2,7 @@ package com.lzhlyle.klotski;
 
 import com.lzhlyle.klotski.block.HorizontalBlock;
 import com.lzhlyle.klotski.game.Game;
+import com.lzhlyle.klotski.move.MoveDirectionEnum;
 import com.lzhlyle.klotski.opening.Opening;
 import com.lzhlyle.klotski.vo.Snapshot;
 
@@ -14,5 +15,6 @@ public class Main {
 
         // pick up H only
         HorizontalBlock h = game.pickUpOnly(HorizontalBlock.class);
+        game.move(h, MoveDirectionEnum.UP);
     }
 }

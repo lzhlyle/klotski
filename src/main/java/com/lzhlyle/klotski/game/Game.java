@@ -5,6 +5,7 @@ import com.lzhlyle.klotski.board.BlockPlace;
 import com.lzhlyle.klotski.board.Board;
 import com.lzhlyle.klotski.board.Cell;
 import com.lzhlyle.klotski.board.StandardBoardFactory;
+import com.lzhlyle.klotski.move.MoveDirectionEnum;
 import com.lzhlyle.klotski.opening.Opening;
 import com.lzhlyle.klotski.pedometer.Pedometer;
 import com.lzhlyle.klotski.rule.MoveRule;
@@ -41,7 +42,7 @@ public class Game {
         this.status = GameStatusEnum.READY;
 
         this.board = this.initBoard(opening.getSnapshot());
-        this.blockPlaceList = this.initBlockPlace(opening.getSnapshot());
+        this.blockPlaceList = this.placeBlocks(opening.getSnapshot(), this.board);
 
         this.pedometer = new Pedometer(new StepRule());
 
@@ -51,33 +52,64 @@ public class Game {
     private Board initBoard(Snapshot snapshot) throws CloneNotSupportedException {
         // should re-construct board from snapshot
         // standard board instead
-        return new StandardBoardFactory().createBoard();
+        Board board = new StandardBoardFactory().createBoard();
+
+        // set cells' position
+        int cellIndex = 0;
+        for (int x = 0; x < 4; x++) {
+            for (int y = 0; y < 5; y++) {
+                board.getCellList().get(cellIndex).setPosition(x, y);
+                cellIndex++;
+            }
+        }
+
+        return board;
     }
 
-    private List<BlockPlace> initBlockPlace(Snapshot snapshot) {
+    private List<BlockPlace> placeBlocks(Snapshot snapshot, Board board) {
         // should re-construct board from snapshot
         // 横刀立马 instead
         List<BlockPlace> blockPlaces = new ArrayList<>();
-        blockPlaces.add(new BlockPlace(new Cell(new Position(1, 3)), new SquareBlock()));
-        blockPlaces.add(new BlockPlace(new Cell(new Position(1, 1)), new HorizontalBlock()));
-        blockPlaces.add(new BlockPlace(new Cell(new Position(0, 1)), new VerticalBlock()));
-        blockPlaces.add(new BlockPlace(new Cell(new Position(3, 1)), new VerticalBlock()));
-        blockPlaces.add(new BlockPlace(new Cell(new Position(0, 3)), new VerticalBlock()));
-        blockPlaces.add(new BlockPlace(new Cell(new Position(3, 3)), new VerticalBlock()));
-        blockPlaces.add(new BlockPlace(new Cell(new Position(0, 0)), new CubeBlock()));
-        blockPlaces.add(new BlockPlace(new Cell(new Position(1, 0)), new CubeBlock()));
-        blockPlaces.add(new BlockPlace(new Cell(new Position(2, 0)), new CubeBlock()));
-        blockPlaces.add(new BlockPlace(new Cell(new Position(3, 0)), new CubeBlock()));
+        blockPlaces.add(this.placeBlock(board, new CubeBlock(), 0, 0));
+        blockPlaces.add(this.placeBlock(board, new CubeBlock(), 1, 0));
+        blockPlaces.add(this.placeBlock(board, new CubeBlock(), 2, 0));
+        blockPlaces.add(this.placeBlock(board, new CubeBlock(), 3, 0));
+        blockPlaces.add(this.placeBlock(board, new VerticalBlock(), 0, 1));
+        blockPlaces.add(this.placeBlock(board, new HorizontalBlock(), 1, 1));
+        blockPlaces.add(this.placeBlock(board, new VerticalBlock(), 3, 1));
+        blockPlaces.add(this.placeBlock(board, new VerticalBlock(), 0, 3));
+        blockPlaces.add(this.placeBlock(board, new SquareBlock(), 1, 3));
+        blockPlaces.add(this.placeBlock(board, new VerticalBlock(), 3, 3));
         return blockPlaces;
+    }
+
+    private BlockPlace placeBlock(Board board, Block block, int x, int y) {
+        Cell southwestCell = board.locateCell(x, y);
+
+        for (int i = 1; i < block.getWidth(); i++) {
+            int cX = southwestCell.getPosition().getX() + i;
+            int cY = southwestCell.getPosition().getY();
+            Cell locateCell = board.locateCell(cX, cY);
+            if (locateCell.isOccupied()) {
+                throw new RuntimeException("the cell(" + cX + "," + cY + ") is occupied.");
+            }
+        }
+
+        for (int i = 1; i < block.getHeight(); i++) {
+            int cX = southwestCell.getPosition().getX();
+            int cY = southwestCell.getPosition().getY() + i;
+            Cell locateCell = board.locateCell(cX, cY);
+            if (locateCell.isOccupied()) {
+                throw new RuntimeException("the cell(" + cX + "," + cY + ") is occupied.");
+            }
+        }
+
+        return new BlockPlace(southwestCell, block);
     }
 
     public void start() {
         this.duration = new Duration();
         this.status = GameStatusEnum.PLAYING;
-    }
-
-    public List<BlockPlace> getBlockPlaceList() {
-        return blockPlaceList;
     }
 
     public <T extends Block> T pickUpOnly(Class blockClass) {
@@ -101,6 +133,13 @@ public class Game {
             throw new RuntimeException("can not find " + blockClass.getSimpleName() + " in " + southwestCellPosition.toString());
         }
         return (T) blocks.get(0);
+    }
+
+    public void move(Block mover, MoveDirectionEnum direction) {
+        boolean isAllow = this.moveRule.check(this.blockPlaceList, mover, direction);
+        if (isAllow) {
+            mover.move(direction);
+        }
     }
 
 }

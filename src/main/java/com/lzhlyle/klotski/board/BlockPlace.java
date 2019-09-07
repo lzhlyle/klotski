@@ -11,6 +11,7 @@ public class BlockPlace {
 
     public BlockPlace(Cell southwestCell, Block block) {
         this.southwestCell = southwestCell;
+        this.southwestCell.occupy();
         this.block = block;
     }
 

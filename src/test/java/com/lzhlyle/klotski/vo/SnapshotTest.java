@@ -28,22 +28,22 @@ public class SnapshotTest {
         List<Cell> cells = new ArrayList<>();
         for (int x = 0; x < 4; x++) {
             for (int y = 0; y < 5; y++) {
-                cells.add(new Cell(new Position(x, y)));
+                cells.add(new Cell(x, y));
             }
         }
         Board board = new Board(cells);
 
         List<BlockPlace> blockPlaces = new ArrayList<>();
-        blockPlaces.add(new BlockPlace(new Cell(new Position(1, 3)), new SquareBlock()));
-        blockPlaces.add(new BlockPlace(new Cell(new Position(1, 1)), new HorizontalBlock()));
-        blockPlaces.add(new BlockPlace(new Cell(new Position(0, 1)), new VerticalBlock()));
-        blockPlaces.add(new BlockPlace(new Cell(new Position(3, 1)), new VerticalBlock()));
-        blockPlaces.add(new BlockPlace(new Cell(new Position(0, 3)), new VerticalBlock()));
-        blockPlaces.add(new BlockPlace(new Cell(new Position(3, 3)), new VerticalBlock()));
-        blockPlaces.add(new BlockPlace(new Cell(new Position(0, 0)), new CubeBlock()));
-        blockPlaces.add(new BlockPlace(new Cell(new Position(1, 0)), new CubeBlock()));
-        blockPlaces.add(new BlockPlace(new Cell(new Position(2, 0)), new CubeBlock()));
-        blockPlaces.add(new BlockPlace(new Cell(new Position(3, 0)), new CubeBlock()));
+        blockPlaces.add(new BlockPlace(new Cell(1, 3), new SquareBlock()));
+        blockPlaces.add(new BlockPlace(new Cell(1, 1), new HorizontalBlock()));
+        blockPlaces.add(new BlockPlace(new Cell(0, 1), new VerticalBlock()));
+        blockPlaces.add(new BlockPlace(new Cell(3, 1), new VerticalBlock()));
+        blockPlaces.add(new BlockPlace(new Cell(0, 3), new VerticalBlock()));
+        blockPlaces.add(new BlockPlace(new Cell(3, 3), new VerticalBlock()));
+        blockPlaces.add(new BlockPlace(new Cell(0, 0), new CubeBlock()));
+        blockPlaces.add(new BlockPlace(new Cell(1, 0), new CubeBlock()));
+        blockPlaces.add(new BlockPlace(new Cell(2, 0), new CubeBlock()));
+        blockPlaces.add(new BlockPlace(new Cell(3, 0), new CubeBlock()));
 
         return new Snapshot(board, blockPlaces);
     }

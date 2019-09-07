@@ -2,12 +2,16 @@ package com.lzhlyle.klotski.game;
 
 import com.lzhlyle.klotski.block.CubeBlock;
 import com.lzhlyle.klotski.block.HorizontalBlock;
+import com.lzhlyle.klotski.board.Cell;
 import com.lzhlyle.klotski.opening.Opening;
 import com.lzhlyle.klotski.vo.Position;
 import com.lzhlyle.klotski.vo.Snapshot;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
+
+import java.util.List;
 
 public class GameTest {
 
@@ -20,6 +24,19 @@ public class GameTest {
         Game game = new Game(opening);
         game.start();
         this.game = game;
+    }
+
+    @Ignore("test private property game.board")
+    @Test
+    public void initBoardTest() {
+//        List<Cell> cells = this.game.board.getCellList();
+//        int cellIndex = 0;
+//        for (int x = 0; x < 4; x++) {
+//            for (int y = 0; y < 5; y++) {
+//                Assert.assertEquals(new Position(x, y), cells.get(cellIndex).getPosition());
+//                cellIndex++;
+//            }
+//        }
     }
 
     @Test

@@ -16,8 +16,7 @@ public abstract class Block implements IMovable, Cloneable {
         this.width = width;
     }
 
-    public boolean move(MoveDirectionEnum direction) {
-        return false;
+    public void move(MoveDirectionEnum direction) {
     }
 
     public int getHeight() {

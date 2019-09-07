@@ -7,28 +7,36 @@ import java.util.List;
 
 public class Cell implements Cloneable {
     private Position position;
-    private boolean isEmpty;
+    private boolean isOccupied;
 
     public Cell() {
         this.position = null;
-        this.isEmpty = true;
+        this.isOccupied = false;
     }
 
-    public Cell(Position position) {
+    public Cell(int x, int y) {
         this();
-        this.position = position;
-    }
-
-    public void setPosition(Position position) {
-        this.position = position;
+        this.setPosition(x, y);
     }
 
     public Position getPosition() {
         return position;
     }
 
-    public boolean isEmpty() {
-        return isEmpty;
+    public void setPosition(int x, int y) {
+        this.position = new Position(x, y);
+    }
+
+    public boolean isOccupied() {
+        return this.isOccupied;
+    }
+
+    public void occupy() {
+        this.isOccupied = true;
+    }
+
+    public void free() {
+        this.isOccupied = false;
     }
 
     public static List<Cell> generateCells(int count) throws CloneNotSupportedException {

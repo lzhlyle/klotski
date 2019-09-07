@@ -10,7 +10,6 @@ public class Pedometer {
     }
 
     public boolean record() {
-        boolean isLegal = this.stepRule.check();
-        return isLegal;
+        return false;
     }
 }
