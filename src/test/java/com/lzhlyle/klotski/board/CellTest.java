@@ -16,6 +16,6 @@ public class CellTest {
     public void clone_override_propertiesShouldEquals() throws CloneNotSupportedException {
         Cell prototype = new Cell();
         Cell cloned = prototype.clone();
-        Assert.assertEquals(prototype.getPosition(), cloned.getPosition());
+        Assert.assertEquals(prototype.getLocation(), cloned.getLocation());
     }
 }

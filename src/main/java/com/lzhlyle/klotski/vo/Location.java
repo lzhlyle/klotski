@@ -2,11 +2,11 @@ package com.lzhlyle.klotski.vo;
 
 import java.util.Objects;
 
-public class Position {
+public class Location {
     private int x;
     private int y;
 
-    public Position(int x, int y) {
+    public Location(int x, int y) {
         this.x = x;
         this.y = y;
     }
@@ -23,9 +23,9 @@ public class Position {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Position position = (Position) o;
-        return x == position.x &&
-                y == position.y;
+        Location location = (Location) o;
+        return x == location.x &&
+                y == location.y;
     }
 
     @Override

@@ -27,21 +27,21 @@ public class Snapshot {
                 // sort by y asc, x asc
                 .sorted(
                         Comparator.comparing(BlockPlace::getSouthwestCell,
-                                Comparator.comparing(Cell::getPosition,
-                                        Comparator.comparingInt(Position::getX))))
+                                Comparator.comparing(Cell::getLocation,
+                                        Comparator.comparingInt(Location::getX))))
                 .sorted(
                         Comparator.comparing(BlockPlace::getSouthwestCell,
-                                Comparator.comparing(Cell::getPosition,
-                                        Comparator.comparingInt(Position::getY))))
+                                Comparator.comparing(Cell::getLocation,
+                                        Comparator.comparingInt(Location::getY))))
                 .forEach(blockPlace -> builder.append(this.getBlockStr(blockPlace.getBlock()))
-                        .append(this.getPositionStr(blockPlace.getSouthwestCell().getPosition())));
+                        .append(this.getPositionStr(blockPlace.getSouthwestCell().getLocation())));
         return builder.toString();
     }
 
-    private String getPositionStr(Position position) {
-        return (position.getX() == 0 ? "" : position.getX())
+    private String getPositionStr(Location location) {
+        return (location.getX() == 0 ? "" : location.getX())
                 + "," +
-                (position.getY() == 0 ? "" : position.getY());
+                (location.getY() == 0 ? "" : location.getY());
     }
 
     private String getBlockStr(Block block) {
@@ -65,8 +65,8 @@ public class Snapshot {
         // support square only
         List<Cell> cellsInBoard = board.getCellList();
         for (Cell cell : cellsInBoard) {
-            width = Math.max(width, cell.getPosition().getX() + 1);
-            height = Math.max(height, cell.getPosition().getY() + 1);
+            width = Math.max(width, cell.getLocation().getX() + 1);
+            height = Math.max(height, cell.getLocation().getY() + 1);
         }
         return width + "," + height;
     }

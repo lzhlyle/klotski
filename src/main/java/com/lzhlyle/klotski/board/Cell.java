@@ -1,16 +1,16 @@
 package com.lzhlyle.klotski.board;
 
-import com.lzhlyle.klotski.vo.Position;
+import com.lzhlyle.klotski.vo.Location;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Cell implements Cloneable {
-    private Position position;
+    private Location location;
     private boolean isOccupied;
 
     public Cell() {
-        this.position = null;
+        this.location = null;
         this.isOccupied = false;
     }
 
@@ -19,12 +19,12 @@ public class Cell implements Cloneable {
         this.setPosition(x, y);
     }
 
-    public Position getPosition() {
-        return position;
+    public Location getLocation() {
+        return location;
     }
 
     public void setPosition(int x, int y) {
-        this.position = new Position(x, y);
+        this.location = new Location(x, y);
     }
 
     public boolean isOccupied() {

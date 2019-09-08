@@ -12,7 +12,7 @@ import com.lzhlyle.klotski.rule.MoveRule;
 import com.lzhlyle.klotski.rule.StepRule;
 import com.lzhlyle.klotski.rule.WinRule;
 import com.lzhlyle.klotski.vo.Duration;
-import com.lzhlyle.klotski.vo.Position;
+import com.lzhlyle.klotski.vo.Location;
 import com.lzhlyle.klotski.vo.Snapshot;
 
 import java.util.ArrayList;
@@ -87,20 +87,16 @@ public class Game {
         Cell southwestCell = board.locateCell(x, y);
 
         for (int i = 1; i < block.getWidth(); i++) {
-            int cX = southwestCell.getPosition().getX() + i;
-            int cY = southwestCell.getPosition().getY();
-            Cell locateCell = board.locateCell(cX, cY);
+            Cell locateCell = board.locateRight(southwestCell);
             if (locateCell.isOccupied()) {
-                throw new RuntimeException("the cell(" + cX + "," + cY + ") is occupied.");
+                throw new RuntimeException("the right-cell is occupied.");
             }
         }
 
         for (int i = 1; i < block.getHeight(); i++) {
-            int cX = southwestCell.getPosition().getX();
-            int cY = southwestCell.getPosition().getY() + i;
-            Cell locateCell = board.locateCell(cX, cY);
+            Cell locateCell = board.locateUp(southwestCell);
             if (locateCell.isOccupied()) {
-                throw new RuntimeException("the cell(" + cX + "," + cY + ") is occupied.");
+                throw new RuntimeException("the up-cell is occupied.");
             }
         }
 
@@ -123,23 +119,35 @@ public class Game {
         return (T) blocks.get(0);
     }
 
-    public <T extends Block> T pickUp(Class blockClass, Position southwestCellPosition) {
+    public <T extends Block> T pickUp(Class blockClass, Location southwestCellLocation) {
         List<Block> blocks = this.blockPlaceList.stream()
                 .filter(bp -> Objects.equals(bp.getBlock().getClass(), blockClass)
-                        && Objects.equals(bp.getSouthwestCell().getPosition(), southwestCellPosition))
+                        && Objects.equals(bp.getSouthwestCell().getLocation(), southwestCellLocation))
                 .map(BlockPlace::getBlock)
                 .collect(Collectors.toList());
         if (blocks.size() != 1) {
-            throw new RuntimeException("can not find " + blockClass.getSimpleName() + " in " + southwestCellPosition.toString());
+            throw new RuntimeException("can not find " + blockClass.getSimpleName() + " in " + southwestCellLocation.toString());
         }
         return (T) blocks.get(0);
     }
 
+    public BlockPlace locateBlock(Block block) {
+        BlockPlace blockPlace = this.blockPlaceList.stream().filter(bp -> Objects.equals(bp.getBlock(), block))
+                .findFirst().orElse(null);
+        if (blockPlace == null) {
+            throw new RuntimeException("can not locate the block");
+        }
+        return blockPlace;
+    }
+
     public void move(Block mover, MoveDirectionEnum direction) {
-        boolean isAllow = this.moveRule.check(this.blockPlaceList, mover, direction);
+        boolean isAllow = this.moveRule.check(this, mover, direction);
         if (isAllow) {
             mover.move(direction);
         }
     }
 
+    public Board getBoard() {
+        return board;
+    }
 }

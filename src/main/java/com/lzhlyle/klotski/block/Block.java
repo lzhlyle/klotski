@@ -16,7 +16,9 @@ public abstract class Block implements IMovable, Cloneable {
         this.width = width;
     }
 
+    @Override
     public void move(MoveDirectionEnum direction) {
+        // TODO lzh block move
     }
 
     public int getHeight() {

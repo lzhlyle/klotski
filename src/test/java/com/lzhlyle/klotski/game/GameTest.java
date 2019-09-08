@@ -2,16 +2,13 @@ package com.lzhlyle.klotski.game;
 
 import com.lzhlyle.klotski.block.CubeBlock;
 import com.lzhlyle.klotski.block.HorizontalBlock;
-import com.lzhlyle.klotski.board.Cell;
 import com.lzhlyle.klotski.opening.Opening;
-import com.lzhlyle.klotski.vo.Position;
+import com.lzhlyle.klotski.vo.Location;
 import com.lzhlyle.klotski.vo.Snapshot;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import java.util.List;
 
 public class GameTest {
 
@@ -33,7 +30,7 @@ public class GameTest {
 //        int cellIndex = 0;
 //        for (int x = 0; x < 4; x++) {
 //            for (int y = 0; y < 5; y++) {
-//                Assert.assertEquals(new Position(x, y), cells.get(cellIndex).getPosition());
+//                Assert.assertEquals(new Location(x, y), cells.get(cellIndex).getLocation());
 //                cellIndex++;
 //            }
 //        }
@@ -59,7 +56,7 @@ public class GameTest {
 
     @Test
     public void pickUp_c00_shouldNotNull() {
-        CubeBlock c = this.game.pickUp(CubeBlock.class, new Position(0, 0));
+        CubeBlock c = this.game.pickUp(CubeBlock.class, new Location(0, 0));
 
         Assert.assertNotNull(c);
     }
@@ -67,11 +64,16 @@ public class GameTest {
     @Test
     public void pickUpOnly_c11_shouldThrowException() {
         try {
-            CubeBlock c = this.game.pickUp(CubeBlock.class, new Position(1, 1));
+            CubeBlock c = this.game.pickUp(CubeBlock.class, new Location(1, 1));
             Assert.fail("should throw exception");
         } catch (RuntimeException ex) {
             System.out.println(ex.getMessage());
             Assert.assertTrue(ex.getMessage().contains("can not find"));
         }
+    }
+
+    @Test
+    public void move() {
+        // DOING lzh Game move() test
     }
 }

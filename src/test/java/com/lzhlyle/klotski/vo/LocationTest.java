@@ -6,15 +6,15 @@ import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
 
-public class PositionTest {
+public class LocationTest {
 
     @Test
     public void equals1() {
         Random rd = new Random();
         int x = rd.nextInt();
         int y = rd.nextInt();
-        Position pos1 = new Position(x, y);
-        Position pos2 = new Position(x, y);
+        Location pos1 = new Location(x, y);
+        Location pos2 = new Location(x, y);
 
         assertEquals(pos1, pos2);
     }
@@ -24,8 +24,8 @@ public class PositionTest {
         Random rd = new Random();
         int x = rd.nextInt();
         int y = rd.nextInt();
-        Position pos1 = new Position(x, y);
-        Position pos2 = new Position(x, y);
+        Location pos1 = new Location(x, y);
+        Location pos2 = new Location(x, y);
 
         assertEquals(pos1.hashCode(), pos2.hashCode());
     }
@@ -35,8 +35,8 @@ public class PositionTest {
         Random rd = new Random();
         int x = rd.nextInt();
         int y = rd.nextInt();
-        Position pos1 = new Position(x, y);
-        Position pos2 = new Position(x, y);
+        Location pos1 = new Location(x, y);
+        Location pos2 = new Location(x, y);
 
         assertEquals(pos1.toString(), pos2.toString());
 
