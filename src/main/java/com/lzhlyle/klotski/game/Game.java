@@ -131,6 +131,11 @@ public class Game {
         return (T) blocks.get(0);
     }
 
+    public <T extends Block> T pickUp(Class blockClass, int x, int y) {
+        return this.pickUp(blockClass, new Location(x, y));
+    }
+
+
     public BlockPlace locateBlock(Block block) {
         BlockPlace blockPlace = this.blockPlaceList.stream().filter(bp -> Objects.equals(bp.getBlock(), block))
                 .findFirst().orElse(null);

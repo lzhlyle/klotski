@@ -56,7 +56,7 @@ public class GameTest {
 
     @Test
     public void pickUp_c00_shouldNotNull() {
-        CubeBlock c = this.game.pickUp(CubeBlock.class, new Location(0, 0));
+        CubeBlock c = this.game.pickUp(CubeBlock.class, 0, 0);
 
         Assert.assertNotNull(c);
     }
@@ -64,7 +64,7 @@ public class GameTest {
     @Test
     public void pickUpOnly_c11_shouldThrowException() {
         try {
-            CubeBlock c = this.game.pickUp(CubeBlock.class, new Location(1, 1));
+            CubeBlock c = this.game.pickUp(CubeBlock.class, 1, 1);
             Assert.fail("should throw exception");
         } catch (RuntimeException ex) {
             System.out.println(ex.getMessage());
