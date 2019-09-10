@@ -1,13 +1,13 @@
 package com.lzhlyle.klotski.block;
 
-import com.lzhlyle.klotski.move.IMovable;
 import com.lzhlyle.klotski.move.MoveDirectionEnum;
+import com.lzhlyle.klotski.move.Movement;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-public abstract class Block implements IMovable, Cloneable {
+public abstract class Block implements Cloneable {
     private int height;
     private int width;
 
@@ -16,9 +16,8 @@ public abstract class Block implements IMovable, Cloneable {
         this.width = width;
     }
 
-    @Override
-    public void move(MoveDirectionEnum direction) {
-        // TODO lzh block move
+    public void move(Movement movement, MoveDirectionEnum direction) {
+        movement.move(this, direction);
     }
 
     public int getHeight() {

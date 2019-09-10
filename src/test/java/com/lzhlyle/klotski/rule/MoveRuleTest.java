@@ -17,7 +17,7 @@ public class MoveRuleTest {
         Snapshot snapshot = new Snapshot("4,5|C,C1,C2,C3,V,1H1,1V3,1V,3S1,3V3,3");
         Opening opening = new Opening(snapshot);
         Game game = new Game(opening);
-        HorizontalBlock h = game.pickUpOnly(HorizontalBlock.class);
+        HorizontalBlock h = game.selectOnly(HorizontalBlock.class);
 
         boolean canMove = new MoveRule().check(game, h, MoveDirectionEnum.UP);
 
@@ -29,7 +29,7 @@ public class MoveRuleTest {
         Snapshot snapshot = new Snapshot("4,5|C,C1,C2,C3,V,1H1,1V3,1V,3S1,3V3,3");
         Opening opening = new Opening(snapshot);
         Game game = new Game(opening);
-        HorizontalBlock h = game.pickUpOnly(HorizontalBlock.class);
+        HorizontalBlock h = game.selectOnly(HorizontalBlock.class);
 
         boolean canMove = new MoveRule().check(game, h, MoveDirectionEnum.DOWN);
 
@@ -41,7 +41,7 @@ public class MoveRuleTest {
         Snapshot snapshot = new Snapshot("4,5|C,C1,C2,C3,V,1H1,1V3,1V,3S1,3V3,3");
         Opening opening = new Opening(snapshot);
         Game game = new Game(opening);
-        VerticalBlock v = game.pickUp(VerticalBlock.class, 0, 1);
+        VerticalBlock v = game.select(VerticalBlock.class, 0, 1);
 
         boolean canMove = new MoveRule().check(game, v, MoveDirectionEnum.LEFT);
 
@@ -53,7 +53,7 @@ public class MoveRuleTest {
         Snapshot snapshot = new Snapshot("4,5|C,C1,C2,C3,V,1H1,1V3,1V,3S1,3V3,3");
         Opening opening = new Opening(snapshot);
         Game game = new Game(opening);
-        SquareBlock s = game.pickUpOnly(SquareBlock.class);
+        SquareBlock s = game.selectOnly(SquareBlock.class);
 
         boolean canMove = new MoveRule().check(game, s, MoveDirectionEnum.RIGHT);
 

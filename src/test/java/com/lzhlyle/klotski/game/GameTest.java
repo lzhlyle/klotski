@@ -2,13 +2,11 @@ package com.lzhlyle.klotski.game;
 
 import com.lzhlyle.klotski.block.CubeBlock;
 import com.lzhlyle.klotski.block.HorizontalBlock;
+import com.lzhlyle.klotski.block.VerticalBlock;
+import com.lzhlyle.klotski.move.MoveDirectionEnum;
 import com.lzhlyle.klotski.opening.Opening;
-import com.lzhlyle.klotski.vo.Location;
 import com.lzhlyle.klotski.vo.Snapshot;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 
 public class GameTest {
 
@@ -21,6 +19,11 @@ public class GameTest {
         Game game = new Game(opening);
         game.start();
         this.game = game;
+    }
+
+    @After
+    public void tear() {
+        this.game = null;
     }
 
     @Ignore("test private property game.board")
@@ -38,7 +41,7 @@ public class GameTest {
 
     @Test
     public void pickUpOnly_h_shouldNotNull() {
-        HorizontalBlock h = this.game.pickUpOnly(HorizontalBlock.class);
+        HorizontalBlock h = this.game.selectOnly(HorizontalBlock.class);
 
         Assert.assertNotNull(h);
     }
@@ -46,7 +49,7 @@ public class GameTest {
     @Test
     public void pickUpOnly_c_shouldThrowException() {
         try {
-            CubeBlock c = this.game.pickUpOnly(CubeBlock.class);
+            CubeBlock c = this.game.selectOnly(CubeBlock.class);
             Assert.fail("should throw exception");
         } catch (RuntimeException ex) {
             System.out.println(ex.getMessage());
@@ -56,7 +59,7 @@ public class GameTest {
 
     @Test
     public void pickUp_c00_shouldNotNull() {
-        CubeBlock c = this.game.pickUp(CubeBlock.class, 0, 0);
+        CubeBlock c = this.game.select(CubeBlock.class, 0, 0);
 
         Assert.assertNotNull(c);
     }
@@ -64,7 +67,7 @@ public class GameTest {
     @Test
     public void pickUpOnly_c11_shouldThrowException() {
         try {
-            CubeBlock c = this.game.pickUp(CubeBlock.class, 1, 1);
+            CubeBlock c = this.game.select(CubeBlock.class, 1, 1);
             Assert.fail("should throw exception");
         } catch (RuntimeException ex) {
             System.out.println(ex.getMessage());
@@ -73,7 +76,57 @@ public class GameTest {
     }
 
     @Test
-    public void move() {
-        // DOING lzh Game move() test
+    public void move_hUp_shouldBeMoved() {
+        HorizontalBlock h = this.game.selectOnly(HorizontalBlock.class);
+
+        this.game.move(h, MoveDirectionEnum.UP);
+
+        String currentSnapshotResult = this.game.getCurrentSnapshot().getCompressResult();
+        Assert.assertEquals("4,5|C,C1,C2,C3,V,1V3,1H1,2V,3S1,3V3,3", currentSnapshotResult);
+    }
+
+    @Test
+    public void move_hUp_c10Up_shouldBeMoved() {
+        HorizontalBlock h = this.game.selectOnly(HorizontalBlock.class);
+        this.game.move(h, MoveDirectionEnum.UP);
+
+        CubeBlock c = this.game.select(CubeBlock.class, 1, 0);
+        this.game.move(c, MoveDirectionEnum.UP);
+
+        String currentSnapshotResult = this.game.getCurrentSnapshot().getCompressResult();
+        Assert.assertEquals("4,5|C,C2,C3,V,1C1,1V3,1H1,2V,3S1,3V3,3", currentSnapshotResult);
+    }
+
+    @Test
+    public void move_hUp_c10Up_c00Right_shouldBeMoved() {
+        HorizontalBlock h = this.game.selectOnly(HorizontalBlock.class);
+        this.game.move(h, MoveDirectionEnum.UP);
+
+        CubeBlock c10 = this.game.select(CubeBlock.class, 1, 0);
+        this.game.move(c10, MoveDirectionEnum.UP);
+
+        CubeBlock c00 = this.game.select(CubeBlock.class, 0, 0);
+        this.game.move(c00, MoveDirectionEnum.RIGHT);
+
+        String currentSnapshotResult = this.game.getCurrentSnapshot().getCompressResult();
+        Assert.assertEquals("4,5|C1,C2,C3,V,1C1,1V3,1H1,2V,3S1,3V3,3", currentSnapshotResult);
+    }
+
+    @Test
+    public void move_hUp_c10Up_v01Down_c00Right_shouldBeMoved() {
+        HorizontalBlock h = this.game.selectOnly(HorizontalBlock.class);
+        this.game.move(h, MoveDirectionEnum.UP);
+
+        CubeBlock c10 = this.game.select(CubeBlock.class, 1, 0);
+        this.game.move(c10, MoveDirectionEnum.UP);
+
+        CubeBlock c00 = this.game.select(CubeBlock.class, 0, 0);
+        this.game.move(c00, MoveDirectionEnum.RIGHT);
+
+        VerticalBlock v01 = this.game.select(VerticalBlock.class, 0, 1);
+        this.game.move(v01, MoveDirectionEnum.DOWN);
+
+        String currentSnapshotResult = this.game.getCurrentSnapshot().getCompressResult();
+        Assert.assertEquals("4,5|V,C1,C2,C3,C1,1V3,1H1,2V,3S1,3V3,3", currentSnapshotResult);
     }
 }

@@ -88,14 +88,18 @@ public class Game {
 
         for (int i = 1; i < block.getWidth(); i++) {
             Cell locateCell = board.locateRight(southwestCell);
-            if (locateCell.isOccupied()) {
+            if (locateCell == null) {
+                throw new RuntimeException("the right-cell isn't exist.");
+            } else if (locateCell.isOccupied()) {
                 throw new RuntimeException("the right-cell is occupied.");
             }
         }
 
         for (int i = 1; i < block.getHeight(); i++) {
             Cell locateCell = board.locateUp(southwestCell);
-            if (locateCell.isOccupied()) {
+            if (locateCell == null) {
+                throw new RuntimeException("the up-cell isn't exist.");
+            } else if (locateCell.isOccupied()) {
                 throw new RuntimeException("the up-cell is occupied.");
             }
         }
@@ -103,12 +107,32 @@ public class Game {
         return new BlockPlace(southwestCell, block);
     }
 
+    private BlockPlace pickUp(Block block) {
+        BlockPlace blockPlace = this.locateBlock(block);
+
+        // free cell
+        Cell southwestCell = blockPlace.getSouthwestCell();
+        southwestCell.free();
+
+        for (int i = 1; i < block.getWidth(); i++) {
+            board.locateRight(southwestCell).free();
+        }
+
+        for (int i = 1; i < block.getHeight(); i++) {
+            board.locateUp(southwestCell).free();
+        }
+
+        this.blockPlaceList.remove(blockPlace);
+
+        return blockPlace;
+    }
+
     public void start() {
         this.duration = new Duration();
         this.status = GameStatusEnum.PLAYING;
     }
 
-    public <T extends Block> T pickUpOnly(Class blockClass) {
+    public <T extends Block> T selectOnly(Class blockClass) {
         List<Block> blocks = this.blockPlaceList.stream()
                 .filter(bp -> Objects.equals(bp.getBlock().getClass(), blockClass))
                 .map(BlockPlace::getBlock)
@@ -119,7 +143,7 @@ public class Game {
         return (T) blocks.get(0);
     }
 
-    public <T extends Block> T pickUp(Class blockClass, Location southwestCellLocation) {
+    public <T extends Block> T select(Class blockClass, Location southwestCellLocation) {
         List<Block> blocks = this.blockPlaceList.stream()
                 .filter(bp -> Objects.equals(bp.getBlock().getClass(), blockClass)
                         && Objects.equals(bp.getSouthwestCell().getLocation(), southwestCellLocation))
@@ -131,10 +155,9 @@ public class Game {
         return (T) blocks.get(0);
     }
 
-    public <T extends Block> T pickUp(Class blockClass, int x, int y) {
-        return this.pickUp(blockClass, new Location(x, y));
+    public <T extends Block> T select(Class blockClass, int x, int y) {
+        return this.select(blockClass, new Location(x, y));
     }
-
 
     public BlockPlace locateBlock(Block block) {
         BlockPlace blockPlace = this.blockPlaceList.stream().filter(bp -> Objects.equals(bp.getBlock(), block))
@@ -146,13 +169,44 @@ public class Game {
     }
 
     public void move(Block mover, MoveDirectionEnum direction) {
-        boolean isAllow = this.moveRule.check(this, mover, direction);
-        if (isAllow) {
-            mover.move(direction);
+        if (!this.moveRule.check(this, mover, direction)) {
+            throw new RuntimeException("illegal movement");
         }
+
+        mover.move((block, dire) -> {
+            // pick up
+            BlockPlace fromBlockPlace = this.pickUp(block);
+
+            // calculate location, and place
+            Cell southwest = fromBlockPlace.getSouthwestCell();
+            int x = southwest.getLocation().getX();
+            int y = southwest.getLocation().getY();
+
+            BlockPlace toBlockPlace;
+            if (dire == MoveDirectionEnum.UP) {
+                toBlockPlace = this.placeBlock(this.board, block, x, y + 1);
+            } else if (dire == MoveDirectionEnum.DOWN) {
+                toBlockPlace = this.placeBlock(this.board, block, x, y - 1);
+            } else if (dire == MoveDirectionEnum.LEFT) {
+                toBlockPlace = this.placeBlock(this.board, block, x - 1, y);
+            } else if (dire == MoveDirectionEnum.RIGHT) {
+                toBlockPlace = this.placeBlock(this.board, block, x + 1, y);
+            } else {
+                throw new RuntimeException("unsupported direction");
+            }
+
+            // append into block place records
+            this.blockPlaceList.add(toBlockPlace);
+        }, direction);
+
+        this.currentSnapshot = new Snapshot(this.board, this.blockPlaceList);
     }
 
     public Board getBoard() {
         return board;
+    }
+
+    public Snapshot getCurrentSnapshot() {
+        return currentSnapshot;
     }
 }

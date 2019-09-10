@@ -14,7 +14,7 @@ public class Main {
         game.start();
 
         // pick up H only
-        HorizontalBlock h = game.pickUpOnly(HorizontalBlock.class);
+        HorizontalBlock h = game.selectOnly(HorizontalBlock.class);
         game.move(h, MoveDirectionEnum.UP);
     }
 }

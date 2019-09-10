@@ -1,13 +1,16 @@
 package com.lzhlyle.klotski.move;
 
+import com.lzhlyle.klotski.block.Block;
+
 @FunctionalInterface
-public interface IMovable {
+public interface Movement {
 
     /**
-     * Move
+     * How to move
      *
+     * @param block
      * @param direction which direction dose the first move move relative to the current position
      * @return movable or not
      */
-    void move(MoveDirectionEnum direction);
+    void move(Block block, MoveDirectionEnum direction);
 }
