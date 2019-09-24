@@ -19,6 +19,7 @@ public class Slover {
     }
 
     public void explore() {
+        // TODO lzh explore the solution
         this.duration = new Duration();
     }
 

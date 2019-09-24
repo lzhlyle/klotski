@@ -14,6 +14,6 @@ public class Quide {
     }
 
     public void take() {
-
+        // TODO lzh take a quide
     }
 }

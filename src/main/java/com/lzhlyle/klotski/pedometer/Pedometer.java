@@ -10,6 +10,7 @@ public class Pedometer {
     }
 
     public boolean record() {
+        // TODO lzh Pedometer
         return false;
     }
 }
