@@ -21,6 +21,9 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class Game {
+    // DOING lzh 应检查相关限制条件
+    // eg: 游戏状态，暂停动作
+
     private Opening opening;
     private MoveRule moveRule;
     private WinRule winRule;
@@ -200,6 +203,11 @@ public class Game {
         }, direction);
 
         this.currentSnapshot = new Snapshot(this.board, this.blockPlaceList);
+
+        if (this.winRule.check(this.blockPlaceList)) {
+            this.duration.stop();
+            this.status = GameStatusEnum.WIN;
+        }
     }
 
     public Board getBoard() {
