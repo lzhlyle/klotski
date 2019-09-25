@@ -28,6 +28,10 @@ public class Location {
                 y == location.y;
     }
 
+    public boolean equals(int x, int y) {
+        return this.equals(new Location(x, y));
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(x, y);
