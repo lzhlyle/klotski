@@ -26,3 +26,5 @@ hs_err_pid*
 # Environment Settings
 .idea/
 *.iml
+*.xlsx
+sh.exe.stackdump
