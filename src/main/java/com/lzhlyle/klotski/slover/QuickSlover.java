@@ -1,55 +1,232 @@
 package com.lzhlyle.klotski.slover;
 
-import java.util.Arrays;
+import java.util.*;
 
 public class QuickSlover {
     // 总是按 SHVVVVCCCC 顺序
     // 横刀立马布局
     // S: 0b0110_0110_0000_0000_0000 : 二进制_第一行占中间两格子_以此类推
+    // target: snapshot[0] = 0b0000_0000_0000_0110_0110;
     private int[] standard;
+    private int maxSize;
+    private int divideNum;
 
     private QuickSlover() {
         standard = new int[10];
         standard[0] = 0b0110_0110_0000_0000_0000; // S
-        standard[1] = 0b0000_0000_0000_0110_0000; // H
+        standard[1] = 0b0000_0000_0110_0000_0000; // H
         standard[2] = 0b1000_1000_0000_0000_0000; // V
         standard[3] = 0b0001_0001_0000_0000_0000; // V
         standard[4] = 0b0000_0000_1000_1000_0000; // V
         standard[5] = 0b0000_0000_0001_0001_0000; // V
         standard[6] = 0b0000_0000_0000_0000_1000; // C
-        standard[7] = 0b0000_0000_0000_0000_0100; // C
-        standard[8] = 0b0000_0000_0000_0000_0010; // C
+        standard[7] = 0b0000_0000_0000_0100_0000; // C
+        standard[8] = 0b0000_0000_0000_0010_0000; // C
         standard[9] = 0b0000_0000_0000_0000_0001; // C
     }
 
-    public int minSteps(int[] snapshot) {
-        // target: snapshot[0] = 0b0000_0000_0000_0110_0110;
-        return -1;
+    public int minSteps(int[] opening) {
+        int target = 0b0000_0000_0000_0110_0110;
+        Queue<int[]> queue = new LinkedList<>(Collections.singleton(opening));
+        Set<BitSet> visited = new HashSet<>(Collections.singleton(this.compress(opening)));
+
+        Map<int[], int[]> quide = new HashMap<>();
+        quide.put(opening, null);
+
+        return this.bfs(1, queue, target, visited, quide);
     }
 
-    /**
-     * 检测棋盘是否有效
-     *
-     * @param snapshot
-     * @return
-     */
-    private boolean validate(int[] snapshot) {
-        if (snapshot.length != 10) return false; // 少子
+    private int bfs(int step, Queue<int[]> queue, int target, Set<BitSet> visited, Map<int[], int[]> quide) {
+        // terminator
+        if (queue.isEmpty()) return -1; // cannot reach
 
-        // TODO lzh 每个block判断是否符合形状
+        // process
+        step++;
+        System.out.println(step + ": " + queue.size() + ": " + visited.size()); // 21: 1260183: 2942392
 
+        // heuristic search
+        Queue<int[]> allNextQueue = new PriorityQueue<>(Comparator.comparingInt((int[] b) -> Math.abs(target - b[0])));
+        while (!queue.isEmpty()) {
+            int[] curr = queue.remove();
+
+            // look up next queue
+            List<int[]> possibilities = this.getPossibilites(curr);
+            for (int[] possibility : possibilities) {
+                // pruning: visited
+                if (visited.contains(this.compress(possibility))) continue;
+                if (possibility[0] == target) {
+                    this.print(possibility);
+                    System.out.println("=======================");
+                    this.output(quide, curr);
+                    return step; // win
+                }
+
+                allNextQueue.add(possibility);
+                visited.add(this.compress(possibility));
+                quide.put(possibility, curr);
+            }
+        }
+
+        Queue<int[]> nextQueue = new LinkedList<>();
+        int size = Math.min(allNextQueue.size(), 18222); // magic: 18222
+//        if (allNextQueue.size() > 1000) System.out.println("size: " + size + ", all: " + allNextQueue.size());
+        for (int i = 0; i < size; i++) {
+            nextQueue.add(allNextQueue.remove());
+        }
+
+        // drill down
+        return this.bfs(step, nextQueue, target, visited, quide);
+    }
+
+    private void output(Map<int[], int[]> quide, int[] curr) {
+        int count = 0;
+        while (quide.get(curr) != null) {
+            System.out.println(count++);
+            this.print(curr);
+            System.out.println();
+            curr = quide.get(curr);
+        }
+        System.out.println(count);
+        this.print(curr);
+    }
+
+    private void print(int[] curr) {
+        int occupying = 0b0;
+        for (int b : curr) {
+
+            StringBuilder builder = new StringBuilder(Integer.toBinaryString(b));
+            int length = builder.length();
+            for (int i = 0; i < 20 - length; i++) builder.insert(0, "0");
+            String str = builder.toString();
+            System.out.print(str.substring(0, 4) + "_");
+            System.out.print(str.substring(4, 8) + "_");
+            System.out.print(str.substring(8, 12) + "_");
+            System.out.print(str.substring(12, 16) + "_");
+            System.out.print(str.substring(16, 20));
+            System.out.println();
+
+            occupying |= b;
+        }
+
+        StringBuilder builder = new StringBuilder(Integer.toBinaryString(occupying));
+        int length = builder.length();
+        for (int i = 0; i < 20 - length; i++) builder.insert(0, "0");
+        char[] chars = builder.toString().toCharArray();
+        // each lines
+        for (int i = 0; i < 5; i++) {
+            int j = i * 4;
+            System.out.print(chars[j++]);
+            System.out.print(chars[j++]);
+            System.out.print(chars[j++]);
+            System.out.print(chars[j]);
+            System.out.println();
+        }
+
+        System.out.println();
+    }
+
+    private List<int[]> getPossibilites(int[] blocks) {
+        List<int[]> result = new ArrayList<>();
+        // pruning
+        // move the blocks near by the empty cells..
+//        int empty = 0b0;
+//        for (int block : blocks) empty |= block;
+
+        // move
+        for (int i = 0; i < blocks.length; i++) {
+            int original = blocks[i];
+            // up
+            blocks[i] = original << 4;
+            if (validate(blocks)) result.add(blocks.clone());
+            // down
+            blocks[i] = original >> 4;
+            if (validate(blocks)) result.add(blocks.clone());
+
+
+            // 若到边(最高/低位的1)，则不可再左右移动
+
+            boolean canLeft = true;
+            int[] leftBorders = new int[]{3, 7, 11, 15, 19};
+            for (int j = 0; canLeft && j < leftBorders.length; j++) {
+                if (((original >> leftBorders[j]) & 1) == 1) canLeft = false;
+            }
+            if (canLeft) {
+                // left
+                blocks[i] = original << 1;
+                if (validate(blocks)) result.add(blocks.clone());
+            }
+
+            boolean canRight = true;
+            int[] rightBorders = new int[]{0, 4, 8, 12, 16};
+            for (int j = 0; canRight && j < rightBorders.length; j++) {
+                if (((original >> rightBorders[j]) & 1) == 1) canRight = false;
+            }
+            if (canRight) {
+                // right
+                blocks[i] = original >> 1;
+                if (validate(blocks)) result.add(blocks.clone());
+            }
+
+            // reverse
+            blocks[i] = original;
+        }
+        return result;
+    }
+
+    private BitSet compress(int[] blocks) {
+        BitSet bitSet = new BitSet(200);
+        // each block
+        for (int i = 0; i < blocks.length; i++) {
+            // each bit in a block
+            for (int j = 0; j < 20; j++) {
+                bitSet.set((i * 20) + j, ((blocks[i] >> j) & 1) == 1);
+            }
+        }
+        return bitSet;
+    }
+
+    // 检测棋盘有效性
+    private boolean validate(int[] blocks) {
+        if (blocks.length != 10) return false; // 少子
+
+        // common
         int occupying = 0b0; // 已占位的
-        for (int block : snapshot) {
-            if (block > ((1 << 20) - 1) || block < 1) return false; // 越界
+        for (int block : blocks) {
+            if (block > ((1 << 20) - 1)) return false; // 越上界
             if ((occupying & block) != 0) return false; // 重叠
             occupying |= block; // 占位累计
         }
-        return true;
+
+        // 消除最低位的17个1后，应该还有1——越下界
+        for (int i = 0; i < 17; i++) occupying &= occupying - 1;
+        return occupying != 0;
     }
 
     public static void main(String[] args) {
         QuickSlover slover = new QuickSlover();
-        System.out.println(Arrays.toString(slover.standard));
-        System.out.println(slover.validate(slover.standard));
+//        int x = slover.standard[0];
+//        System.out.println(x & -x);
+
+//        int min = Integer.MAX_VALUE;
+//        for (int i = 816; i < 12000; i++) {
+//            slover.maxSize = 816;
+//            for (int j = 2; j < 5; j++) {
+//                slover.divideNum = 5;
+        int res = slover.minSteps(slover.standard);
+//                System.out.println("maxSize = " + slover.maxSize + ", divideNum = " + slover.divideNum + ", res = " + res);
+//                min = Math.min(min, res);
+//                System.out.println("min = " + min);
+//            }
+//        }
+        System.out.println(res);
+
+//        System.out.println(Arrays.toString(slover.standard));
+//        System.out.println(slover.validate(slover.standard));
+//
+//        System.out.println(slover.compress(slover.standard));
+//
+//        System.out.println(slover.compress(slover.standard).equals(slover.compress(slover.standard)));
+//
+//        System.out.println(slover.getPossibilites(slover.standard));
     }
 }
