@@ -33,7 +33,7 @@ public class QuickSlover {
         Map<int[], int[]> quide = new HashMap<>();
         quide.put(opening, null);
 
-        return this.bfs(1, queue, target, visited, quide);
+        return this.bfs(0, queue, target, visited, quide);
     }
 
     private int bfs(int step, Queue<int[]> queue, int target, Set<BitSet> visited, Map<int[], int[]> quide) {
@@ -68,7 +68,7 @@ public class QuickSlover {
         }
 
         Queue<int[]> nextQueue = new LinkedList<>();
-        int size = Math.min(allNextQueue.size(), 18222); // magic: 18222
+        int size = Math.min(allNextQueue.size(), 20000); // magic: 18222
 //        if (allNextQueue.size() > 1000) System.out.println("size: " + size + ", all: " + allNextQueue.size());
         for (int i = 0; i < size; i++) {
             nextQueue.add(allNextQueue.remove());
@@ -81,8 +81,9 @@ public class QuickSlover {
     private void output(Map<int[], int[]> quide, int[] curr) {
         int count = 0;
         while (quide.get(curr) != null) {
-            System.out.println(count++);
             this.print(curr);
+            if (!this.isMovingSameBlock(curr, quide.get(curr), quide.get(quide.get(curr)))) count++;
+            System.out.println(count);
             System.out.println();
             curr = quide.get(curr);
         }
@@ -90,10 +91,19 @@ public class QuickSlover {
         this.print(curr);
     }
 
+    private boolean isMovingSameBlock(int[] curr, int[] prev, int[] prevPrev) {
+        if (prevPrev == null) return true;
+        int lastMoving = 0, lastLastMoving = 0;
+        for (int i = 0; i < 10; i++) {
+            if (curr[i] != prev[i]) lastMoving = i;
+            if (prev[i] != prevPrev[i]) lastLastMoving = i;
+        }
+        return lastMoving == lastLastMoving;
+    }
+
     private void print(int[] curr) {
         int occupying = 0b0;
         for (int b : curr) {
-
             StringBuilder builder = new StringBuilder(Integer.toBinaryString(b));
             int length = builder.length();
             for (int i = 0; i < 20 - length; i++) builder.insert(0, "0");
@@ -135,42 +145,74 @@ public class QuickSlover {
         // move
         for (int i = 0; i < blocks.length; i++) {
             int original = blocks[i];
+
             // up
             blocks[i] = original << 4;
-            if (validate(blocks)) result.add(blocks.clone());
+            if (validate(blocks)) {
+                result.add(blocks.clone());
+                if (i != 0) {
+                    blocks[i] = original << 8;
+                    if (validate(blocks)) result.add(blocks.clone());
+                }
+            }
+
             // down
             blocks[i] = original >> 4;
-            if (validate(blocks)) result.add(blocks.clone());
+            if (validate(blocks)) {
+                result.add(blocks.clone());
+                if (i != 0) {
+                    blocks[i] = original >> 8;
+                    if (validate(blocks)) result.add(blocks.clone());
+                }
+            }
 
 
             // 若到边(最高/低位的1)，则不可再左右移动
 
-            boolean canLeft = true;
-            int[] leftBorders = new int[]{3, 7, 11, 15, 19};
-            for (int j = 0; canLeft && j < leftBorders.length; j++) {
-                if (((original >> leftBorders[j]) & 1) == 1) canLeft = false;
-            }
-            if (canLeft) {
-                // left
+            // left
+            if (!this.isLeftBorder(original)) {
                 blocks[i] = original << 1;
-                if (validate(blocks)) result.add(blocks.clone());
+                if (validate(blocks)) {
+                    result.add(blocks.clone());
+                    if (i != 0 && !this.isLeftBorder(original << 1)) {
+                        blocks[i] = original << 2;
+                        if (validate(blocks)) result.add(blocks.clone());
+                    }
+                }
             }
 
-            boolean canRight = true;
-            int[] rightBorders = new int[]{0, 4, 8, 12, 16};
-            for (int j = 0; canRight && j < rightBorders.length; j++) {
-                if (((original >> rightBorders[j]) & 1) == 1) canRight = false;
-            }
-            if (canRight) {
-                // right
+            // right
+            if (!this.isRightBorder(original)) {
                 blocks[i] = original >> 1;
-                if (validate(blocks)) result.add(blocks.clone());
+                if (validate(blocks)) {
+                    result.add(blocks.clone());
+                    if (i != 0 && !this.isRightBorder(original >> 1)) {
+                        blocks[i] = original >> 2;
+                        if (validate(blocks)) result.add(blocks.clone());
+                    }
+                }
             }
 
             // reverse
             blocks[i] = original;
         }
         return result;
+    }
+
+    private boolean isLeftBorder(int block) {
+        int[] leftBorders = new int[]{3, 7, 11, 15, 19};
+        for (int leftBorder : leftBorders) {
+            if (((block >> leftBorder) & 1) == 1) return true;
+        }
+        return false;
+    }
+
+    private boolean isRightBorder(int block) {
+        int[] rightBorders = new int[]{0, 4, 8, 12, 16};
+        for (int rightBorder : rightBorders) {
+            if (((block >> rightBorder) & 1) == 1) return true;
+        }
+        return false;
     }
 
     private BitSet compress(int[] blocks) {
