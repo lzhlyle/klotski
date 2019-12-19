@@ -1,8 +1,8 @@
-package com.lzhlyle.klotski.slover;
+package com.lzhlyle.klotski.solver;
 
 import java.util.*;
 
-public class QuickSlover {
+public class QuickSolver {
     // 总是按 SHVVVVCCCC 顺序
     // 横刀立马布局
     // S: 0b0110_0110_0000_0000_0000 : 二进制_第一行占中间两格子_以此类推
@@ -11,7 +11,7 @@ public class QuickSlover {
     private int maxSize;
     private int divideNum;
 
-    private QuickSlover() {
+    private QuickSolver() {
         standard = new int[10];
         standard[0] = 0b0110_0110_0000_0000_0000; // S
         standard[1] = 0b0000_0000_0110_0000_0000; // H
@@ -245,30 +245,30 @@ public class QuickSlover {
     }
 
     public static void main(String[] args) {
-        QuickSlover slover = new QuickSlover();
-//        int x = slover.standard[0];
+        QuickSolver solver = new QuickSolver();
+//        int x = solver.standard[0];
 //        System.out.println(x & -x);
 
 //        int min = Integer.MAX_VALUE;
 //        for (int i = 816; i < 12000; i++) {
-//            slover.maxSize = 816;
+//            solver.maxSize = 816;
 //            for (int j = 2; j < 5; j++) {
-//                slover.divideNum = 5;
-        int res = slover.minSteps(slover.standard);
-//                System.out.println("maxSize = " + slover.maxSize + ", divideNum = " + slover.divideNum + ", res = " + res);
+//                solver.divideNum = 5;
+        int res = solver.minSteps(solver.standard);
+//                System.out.println("maxSize = " + solver.maxSize + ", divideNum = " + solver.divideNum + ", res = " + res);
 //                min = Math.min(min, res);
 //                System.out.println("min = " + min);
 //            }
 //        }
         System.out.println(res);
 
-//        System.out.println(Arrays.toString(slover.standard));
-//        System.out.println(slover.validate(slover.standard));
+//        System.out.println(Arrays.toString(solver.standard));
+//        System.out.println(solver.validate(solver.standard));
 //
-//        System.out.println(slover.compress(slover.standard));
+//        System.out.println(solver.compress(solver.standard));
 //
-//        System.out.println(slover.compress(slover.standard).equals(slover.compress(slover.standard)));
+//        System.out.println(solver.compress(solver.standard).equals(solver.compress(solver.standard)));
 //
-//        System.out.println(slover.getPossibilites(slover.standard));
+//        System.out.println(solver.getPossibilites(solver.standard));
     }
 }

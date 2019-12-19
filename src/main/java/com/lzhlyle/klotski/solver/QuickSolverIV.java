@@ -1,15 +1,17 @@
-package com.lzhlyle.klotski.slover;
+package com.lzhlyle.klotski.solver;
+
+import com.lzhlyle.klotski.vo.Duration;
 
 import java.util.*;
 
-public class QuickSloverIII {
+public class QuickSolverIV {
     // 总是按 SHVVVVCCCC 顺序
     // 横刀立马布局
     // S: 0b0110_0110_0000_0000_0000 : 二进制_第一行占中间两格子_以此类推
     // target: snapshot[0] = 0b0000_0000_0000_0110_0110;
     private int[] standard;
 
-    private QuickSloverIII() {
+    private QuickSolverIV() {
         standard = new int[10];
         standard[0] = 0b0110_0110_0000_0000_0000; // S
         standard[1] = 0b0000_0000_0110_0000_0000; // H
@@ -26,13 +28,13 @@ public class QuickSloverIII {
     public int minSteps(int[] opening) {
         int target = 0b0000_0000_0000_0110_0110;
         Queue<int[]> queue = new LinkedList<>(Collections.singleton(opening));
-        Set<BitSet> visited = new HashSet<>(Collections.singleton(this.compress(opening)));
+        Set<Long> visited = new HashSet<>(Collections.singleton(this.compress(opening)));
         Map<int[], int[]> paths = new HashMap<>();
         paths.put(opening, null);
         return this.bfs(0, queue, target, visited, paths);
     }
 
-    private int bfs(int step, Queue<int[]> queue, int target, Set<BitSet> visited, Map<int[], int[]> paths) {
+    private int bfs(int step, Queue<int[]> queue, int target, Set<Long> visited, Map<int[], int[]> paths) {
         // terminator
         if (queue.isEmpty()) return -1; // cannot reach
         // process
@@ -47,21 +49,24 @@ public class QuickSloverIII {
                 // pruning: visited
                 if (visited.contains(this.compress(possibility))) continue;
                 if (possibility[0] == target) {
+                    duration.stop();
                     paths.put(possibility, curr);
                     return step; // win
                 }
                 allNextQueue.add(possibility);
                 visited.add(this.compress(possibility));
+//                visited.add(this.compress(this.getMirror(possibility)));
                 paths.put(possibility, curr);
             }
         }
         Queue<int[]> nextQueue = new LinkedList<>();
-        int size = Math.min(allNextQueue.size(), 30000);
+        int size = Math.min(allNextQueue.size(), 29000);
         for (int i = 0; i < size; i++) nextQueue.add(allNextQueue.remove());
         // drill down
         return this.bfs(step, nextQueue, target, visited, paths);
     }
 
+    // O(n^2)
     private List<int[]> getPossibilities(int[] blocks) {
         List<int[]> result = new ArrayList<>();
         // move
@@ -146,29 +151,42 @@ public class QuickSloverIII {
         return result;
     }
 
+    // O(5)
     private boolean isLeftBorder(int block) {
         int[] leftBorders = new int[]{3, 7, 11, 15, 19};
         for (int leftBorder : leftBorders) if (((block >> leftBorder) & 1) == 1) return true;
         return false;
     }
 
+    // O(5)
     private boolean isRightBorder(int block) {
         int[] rightBorders = new int[]{0, 4, 8, 12, 16};
         for (int rightBorder : rightBorders) if (((block >> rightBorder) & 1) == 1) return true;
         return false;
     }
 
-    private BitSet compress(int[] blocks) {
-        BitSet bitSet = new BitSet(200);
+    // O(20n)
+    private long compress(int[] blocks) {
+        // max block: 1100_1100_0000_0000_0000 = (1<<19) + (1<<18) + (1<<15) + (1<<14)
+        // 最大的最低位为19:10011,10个block共 5*10=50 bit即可
+        long res = 0b0; // 64 bit
         // each block
         for (int i = 0; i < blocks.length; i++) {
-            // each bit in a block
-            for (int j = 0; j < 20; j++) bitSet.set((i * 20) + j, ((blocks[i] >> j) & 1) == 1);
+            // 找最低位的1的位置
+            long pos = 0; // 64 bit
+            for (int j = 1; j < 20; j++) {
+                if (((blocks[i] >> j) << j) != blocks[i]) {
+                    pos = j - 1;
+                    break;
+                }
+            }
+            res |= (pos << (i * 5));
         }
-        return bitSet;
+        return res;
     }
 
     // 检测棋盘有效性
+    // O(n)
     private boolean validate(int[] blocks) {
         if (blocks.length != 10) return false; // 少子
         int occupying = 0b0; // 已占位的
@@ -182,9 +200,28 @@ public class QuickSloverIII {
         return occupying != 0;
     }
 
+    // O(n)
+    private int[] getMirror(int[] blocks) {
+        int len = blocks.length;
+        int[] mirror = new int[len];
+        for (int i = 0; i < len; i++) {
+            if (this.isLeftBorder(blocks[i])) mirror[i] = blocks[i] >> (i < 2 ? 2 : 3);
+            else if (this.isRightBorder(blocks[i])) mirror[i] = blocks[i] << (i < 2 ? 2 : 3);
+            else if (i > 1) {
+                if (this.isLeftBorder(blocks[i] << 1)) mirror[i] = blocks[i] >> 1;
+                if (this.isRightBorder(blocks[i] >> 1)) mirror[i] = blocks[i] << 1;
+            } else mirror[i] = blocks[i];
+        }
+        return mirror;
+    }
+
+    private static Duration duration;
+
     public static void main(String[] args) {
-        QuickSloverIII slover = new QuickSloverIII();
-        int res = slover.minSteps(slover.standard);
+        QuickSolverIV solver = new QuickSolverIV();
+        duration = new Duration();
+        int res = solver.minSteps(solver.standard);
         System.out.println(res);
+        System.out.println("millis: " + duration.getDurationMillis());
     }
 }
