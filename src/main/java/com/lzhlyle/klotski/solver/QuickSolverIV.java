@@ -1,7 +1,5 @@
 package com.lzhlyle.klotski.solver;
 
-import com.lzhlyle.klotski.vo.Duration;
-
 import java.util.*;
 
 public class QuickSolverIV {
@@ -39,8 +37,8 @@ public class QuickSolverIV {
         if (queue.isEmpty()) return -1; // cannot reach
         // process
         step++;
-        // heuristic search
-        Queue<int[]> allNextQueue = new PriorityQueue<>(Comparator.comparingInt((int[] b) -> Math.abs(target - b[0])));
+//        System.out.println(step + ": " + queue.size() + ": " + visited.size());
+        Queue<int[]> nextQueue = new LinkedList<>();
         while (!queue.isEmpty()) {
             int[] curr = queue.remove();
             // look up next queue
@@ -48,20 +46,14 @@ public class QuickSolverIV {
             for (int[] possibility : possibilities) {
                 // pruning: visited
                 if (visited.contains(this.compress(possibility))) continue;
-                if (possibility[0] == target) {
-                    duration.stop();
-                    paths.put(possibility, curr);
-                    return step; // win
-                }
-                allNextQueue.add(possibility);
-                visited.add(this.compress(possibility));
-//                visited.add(this.compress(this.getMirror(possibility)));
+                // can be possible
                 paths.put(possibility, curr);
+                if (possibility[0] == target) return step; // win
+                nextQueue.add(possibility);
+                visited.add(this.compress(possibility));
+                visited.add(this.compress(this.getMirror(possibility)));
             }
         }
-        Queue<int[]> nextQueue = new LinkedList<>();
-        int size = Math.min(allNextQueue.size(), 29000);
-        for (int i = 0; i < size; i++) nextQueue.add(allNextQueue.remove());
         // drill down
         return this.bfs(step, nextQueue, target, visited, paths);
     }
@@ -167,25 +159,44 @@ public class QuickSolverIV {
 
     // O(20n)
     private long compress(int[] blocks) {
+        int[] temp = new int[10];
+        temp[0] = blocks[0];
+        temp[1] = blocks[1];
+
+        // 先对同类型的排序
+        int[] vArr = new int[]{blocks[2], blocks[3], blocks[4], blocks[5]};
+        Arrays.sort(vArr);
+        temp[2] = vArr[0];
+        temp[3] = vArr[1];
+        temp[4] = vArr[2];
+        temp[5] = vArr[3];
+
+        int[] cArr = new int[]{blocks[6], blocks[7], blocks[8], blocks[9]};
+        Arrays.sort(cArr);
+        temp[6] = cArr[0];
+        temp[7] = cArr[1];
+        temp[8] = cArr[2];
+        temp[9] = cArr[3];
+
+
         // max block: 1100_1100_0000_0000_0000 = (1<<19) + (1<<18) + (1<<15) + (1<<14)
         // 最大的最低位为19:10011,10个block共 5*10=50 bit即可
         long res = 0b0; // 64 bit
         // each block
-        for (int i = 0; i < blocks.length; i++) {
+        for (int i = 0; i < temp.length; i++) {
             // 找最低位的1的位置
-            long pos = 0; // 64 bit
-            for (int j = 1; j < 20; j++) {
-                if (((blocks[i] >> j) << j) != blocks[i]) {
-                    pos = j - 1;
+            long lowest = 0; // 64 bit
+            for (int n = 0; n < 20; n++) {
+                if (((temp[i] >> n) & 1) == 1) {
+                    lowest = n;
                     break;
                 }
             }
-            res |= (pos << (i * 5));
+            res |= (lowest << (i * 5));
         }
         return res;
     }
 
-    // 检测棋盘有效性
     // O(n)
     private boolean validate(int[] blocks) {
         if (blocks.length != 10) return false; // 少子
@@ -215,13 +226,14 @@ public class QuickSolverIV {
         return mirror;
     }
 
-    private static Duration duration;
-
     public static void main(String[] args) {
         QuickSolverIV solver = new QuickSolverIV();
-        duration = new Duration();
+
+        Date begin = new Date();
         int res = solver.minSteps(solver.standard);
+        Date end = new Date();
+
         System.out.println(res);
-        System.out.println("millis: " + duration.getDurationMillis());
+        System.out.println("millis: " + (end.getTime() - begin.getTime()));
     }
 }
