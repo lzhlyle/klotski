@@ -160,26 +160,31 @@ public class QuickSolverIV {
     // O(20n)
     private long compress(int[] blocks) {
         int[] temp = new int[10];
+//        System.arraycopy(blocks, 0, temp, 0, 2);
         temp[0] = blocks[0];
         temp[1] = blocks[1];
 
         // 先对同类型的排序
-        int[] vArr = new int[]{blocks[2], blocks[3], blocks[4], blocks[5]};
+        int[] vArr = new int[] {blocks[2], blocks[3], blocks[4], blocks[5]};
+//        System.arraycopy(blocks, 2, vArr, 0, 4);
         Arrays.sort(vArr);
+//        System.arraycopy(vArr, 0, temp, 2, 4);
         temp[2] = vArr[0];
         temp[3] = vArr[1];
         temp[4] = vArr[2];
         temp[5] = vArr[3];
 
         int[] cArr = new int[]{blocks[6], blocks[7], blocks[8], blocks[9]};
+//        System.arraycopy(blocks, 6, cArr, 0, 4);
         Arrays.sort(cArr);
+//        System.arraycopy(cArr, 0, temp, 6, 4);
         temp[6] = cArr[0];
         temp[7] = cArr[1];
         temp[8] = cArr[2];
         temp[9] = cArr[3];
 
 
-        // eg: 1100_1100_0000_0000_0000 = (1<<19) + (1<<18) + (1<<15) + (1<<14)
+        // eg: 1100_1100_0000_0000_0000 = (1<<19) | (1<<18) | (1<<15) | (1<<14)
         // 最大的最低位为19:10011,10个block共 5*10=50 bit即可
         long res = 0b0; // 64 bit
         // each block
