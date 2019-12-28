@@ -33,11 +33,16 @@ public class QuickSolver4Blog {
         // 分身走过路口的记录
         Set<Long> visited = new HashSet<>(Collections.singleton(this.compress(opening)));
 
-        return this.bfs(0, queue, target, visited);
+        // 路径记录
+        Map<int[], int[]> paths = new HashMap<>();
+        paths.put(opening, null);
+
+        return this.bfs(0, queue, target, visited, paths); // 传入跟踪者
     }
 
     // 广度优先搜索
-    private int bfs(int step, Queue<int[]> queue, int target, Set<Long> visited) {
+    // 支持传入跟踪者
+    private int bfs(int step, Queue<int[]> queue, int target, Set<Long> visited, Map<int[], int[]> paths) {
         // terminator 递归终止条件
         if (queue.isEmpty()) return -1; // 所有路口都已经无路可走，找不到
 
@@ -54,9 +59,13 @@ public class QuickSolver4Blog {
                 if (visited.contains(this.compress(possibility))) continue; // 若走过，则跳过不再考虑
 
                 // can be possible
+                paths.put(possibility, current); // 跟踪者执行记录
 
                 // 下一条路就是终点，则返回经过了多少批分身（即多少个路口）
-                if (possibility[0] == target) return step; // win
+                if (possibility[0] == target) {
+                    output(paths, possibility); // 解开注释时，记得确认运行次数
+                    return step; // win
+                }
 
                 // 若不是终点，则入选下一轮分岔路队列
                 nextQueue.add(possibility);
@@ -69,7 +78,65 @@ public class QuickSolver4Blog {
         }
 
         // drill down 所有分身接着向前走
-        return this.bfs(step, nextQueue, target, visited);
+        return this.bfs(step, nextQueue, target, visited, paths); // 传入跟踪者
+    }
+
+    // 输出路径
+    private void output(Map<int[], int[]> paths, int[] curr) {
+        // 先利用栈的先进后出，倒序存行进步骤
+        Stack<int[]> stack = new Stack<>();
+        while (paths.get(curr) != null) {
+            stack.push(curr);
+            curr = paths.get(curr);
+        }
+
+        System.out.println("========================");
+        System.out.println("开局");
+        printLayout(curr);
+
+        int count = 0;
+        while (!stack.isEmpty()) {
+            System.out.println("第 " + (++count) + " 步");
+            int[] b = stack.pop();
+            printLayout(b);
+
+            // 输出镜像棋局
+//            System.out.println("mirror:");
+//            printLayout(this.getMirror(b));
+        }
+    }
+
+    // 输出棋局
+    private void printLayout(int[] curr) {
+        // 每个棋子，每个1都以字符表示
+        char[] symbol = new char[]{'S', 'H', 'V', 'V', 'V', 'V', 'C', 'C', 'C', 'C'};
+        String[] bStrArr = new String[10];
+        // 逐棋子补0后转String
+        for (int i = 0; i < 10; i++) {
+            StringBuilder builder = new StringBuilder(Integer.toBinaryString(curr[i]));
+            int length = builder.length();
+            for (int j = 0; j < 20 - length; j++) builder.insert(0, "0");
+            bStrArr[i] = builder.toString().replace('1', symbol[i]);
+        }
+
+        // 将棋子存入五行四列的20个格子中
+        char[] inline = new char[20];
+        for (int i = 0; i < 20; i++) {
+            for (String bStr : bStrArr) {
+                if (bStr.charAt(i) != '0') { inline[i] = bStr.charAt(i); break; }
+            }
+        }
+
+        // 逐行输出
+        for (int i = 0; i < 5; i++) {
+            int j = i * 4;
+            System.out.print(inline[j++]);
+            System.out.print(inline[j++]);
+            System.out.print(inline[j++]);
+            System.out.print(inline[j]);
+            System.out.println();
+        }
+        System.out.println();
     }
 
     // 返回棋局的镜像棋局
@@ -81,10 +148,10 @@ public class QuickSolver4Blog {
             // 最左边的，右移2（曹操/关羽——横向已占2格的）或3格（非曹操关羽——横向只占1格的）
             // 1100 -> 0011, 1000 -> 0001
             if (this.isLeftBorder(blocks[i])) mirror[i] = blocks[i] >> (i < 2 ? 2 : 3);
-            // 最右边，左移2或3格
-            // 0011 -> 1100, 0001 -> 1000
+                // 最右边，左移2或3格
+                // 0011 -> 1100, 0001 -> 1000
             else if (this.isRightBorder(blocks[i])) mirror[i] = blocks[i] << (i < 2 ? 2 : 3);
-            // 非曹操/关羽时（曹/关在中间时就是镜像位），可能需左/右移1格
+                // 非曹操/关羽时（曹/关在中间时就是镜像位），可能需左/右移1格
             else if (i > 1) {
                 // 左移1格到边的话，那么镜像位为右移1格
                 // 0100 -> 0010
@@ -273,7 +340,7 @@ public class QuickSolver4Blog {
     public static void main(String[] args) {
         QuickSolver4Blog solver = new QuickSolver4Blog();
         long sum = 0;
-        int times = 100;
+        int times = 1; // 输出路劲时可改为1
         for (int i = 0; i < times; i++) {
             Date begin = new Date();
             int res = solver.minSteps(solver.standard);
