@@ -63,7 +63,7 @@ public class QuickSolver4Blog {
 
                 // 下一条路就是终点，则返回经过了多少批分身（即多少个路口）
                 if (possibility[0] == target) {
-                    output(paths, possibility); // 解开注释时，记得确认运行次数
+//                    output(paths, possibility); // 解开注释时，记得确认运行次数
                     return step; // win
                 }
 
@@ -123,7 +123,10 @@ public class QuickSolver4Blog {
         char[] inline = new char[20];
         for (int i = 0; i < 20; i++) {
             for (String bStr : bStrArr) {
-                if (bStr.charAt(i) != '0') { inline[i] = bStr.charAt(i); break; }
+                if (bStr.charAt(i) != '0') {
+                    inline[i] = bStr.charAt(i);
+                    break;
+                }
             }
         }
 
@@ -324,26 +327,35 @@ public class QuickSolver4Blog {
         // 遍历棋子
         for (int i = 0; i < temp.length; i++) {
             // 找最低位的1的位置
-            long lowest = 0; // 64 bit
-            for (int n = 0; n < 20; n++) {
-                if (((temp[i] >> n) & 1) == 1) {
-                    lowest = n;
-                    break;
-                }
-            }
+            long lowest = QuickSolver4Blog.log2(temp[i] & -temp[i]);
+
+//            long lowest = 0; // 64 bit
+//            for (int n = 0; n < 20; n++) {
+//                if (((temp[i] >> n) & 1) == 1) {
+//                    lowest = n;
+//                    break;
+//                }
+//            }
+
             // 左移后并入，左移5是跨过上一个棋子已经并入的5个位
             res |= (lowest << (i * 5));
         }
         return res;
     }
 
+    private static int log2(int n) {
+        if (n <= 0) throw new IllegalArgumentException();
+        return 31 - Integer.numberOfLeadingZeros(n);
+    }
+
     public static void main(String[] args) {
         QuickSolver4Blog solver = new QuickSolver4Blog();
         long sum = 0;
-        int times = 1; // 输出路劲时可改为1
+        int times = 100; // 输出路劲时可改为1
         for (int i = 0; i < times; i++) {
             Date begin = new Date();
             int res = solver.minSteps(solver.standard);
+//            System.out.println(res);
             Date end = new Date();
             sum += end.getTime() - begin.getTime();
         }
